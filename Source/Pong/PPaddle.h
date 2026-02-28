@@ -45,7 +45,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* PaddleMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+public:
+	UPROPERTY(EditAnywhere)
 	UFloatingPawnMovement* MoveComp;
 
 	
@@ -64,7 +65,7 @@ protected:
 //  Function Declarations
 
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void MoveVertical(const FInputActionValue& Value);
 
 
