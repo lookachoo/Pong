@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
 #include "PBall.generated.h"
 
 class UStaticMeshComponent;
 class APPaddle;
+class UAudioComponent;
 
 UCLASS()
 class PONG_API APBall : public AActor
@@ -29,6 +31,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UBoxComponent* BallCollision;
+
+	UPROPERTY(EditAnywhere)
+	UAudioComponent* BounceSound;
 
 
 	UPROPERTY(EditAnywhere)

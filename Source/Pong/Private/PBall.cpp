@@ -16,6 +16,8 @@ APBall::APBall()
 	BallCollision = CreateDefaultSubobject <UBoxComponent>("BallCollision");
 	BallCollision->SetupAttachment(BallMesh);
 
+	BounceSound = CreateDefaultSubobject<UAudioComponent>("BounceSound");
+
 	Velocity = FVector(0, 1, 0) * DefaultSpeed; // start moving right
 
 }
@@ -64,14 +66,17 @@ void APBall::Tick(float DeltaTime)
 
 			float Speed = DefaultSpeed;
 			float PaddleSpeed = HitPaddle->GetVelocity().Size();
+			PaddleSpeed = FMath::Clamp(PaddleSpeed, 0.0f, 3000.0f);
 			Speed = PaddleSpeed + Speed;
 
 			Velocity = NewDir.GetSafeNormal() * Speed;
+			BounceSound->Play(0.0f);
 		}
 		else 
 		{
 			const FVector N = Hit.ImpactNormal.GetSafeNormal();
 			Velocity = Velocity.MirrorByVector(N);
+			BounceSound->Play(0.0f);
 		}
 	}
 }
