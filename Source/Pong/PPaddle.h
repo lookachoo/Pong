@@ -55,8 +55,11 @@ protected:
 	//UPROPERTY(EditAnywhere, Category="Input")
 	//UInputMappingContext* DefaultInputMapping;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Input")
+	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* Input_MoveVertical = nullptr;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* Input_MoveHorizontal = nullptr;
 
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -67,6 +70,9 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 	void MoveVertical(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+	void MoveHorizontal(const FInputActionValue& Value);
 
 
 public:	

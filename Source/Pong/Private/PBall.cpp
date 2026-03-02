@@ -18,8 +18,6 @@ APBall::APBall()
 
 	BounceSound = CreateDefaultSubobject<UAudioComponent>("BounceSound");
 
-	Velocity = FVector(0, 1, 0) * DefaultSpeed; // start moving right
-
 }
 
 // Called when the game starts or when spawned
@@ -27,6 +25,14 @@ void APBall::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (!HorizontalMovement)
+	{
+		Velocity = FVector(0, 1, 0) * DefaultSpeed; // start moving right
+	}
+	else
+	{
+		Velocity = FVector(-1, 0, 0) * DefaultSpeed; // start moving down
+	}
 }
 
 
@@ -38,7 +44,7 @@ void APBall::Tick(float DeltaTime)
 	
 	FHitResult Hit;
 	AddActorWorldOffset(Velocity * DeltaTime, true, &Hit);
-	if (Hit.bBlockingHit)
+	if (Hit.bBlockingHit && !HorizontalMovement)
 	{
 		APPaddle* HitPaddle = Cast<APPaddle>(Hit.GetActor());
 		if (HitPaddle)
@@ -73,6 +79,47 @@ void APBall::Tick(float DeltaTime)
 			BounceSound->Play(0.0f);
 		}
 		else 
+		{
+			const FVector N = Hit.ImpactNormal.GetSafeNormal();
+			Velocity = Velocity.MirrorByVector(N);
+			BounceSound->Play(0.0f);
+		}
+	}
+	else if (Hit.bBlockingHit && HorizontalMovement)
+	{
+		APPaddle* HitPaddle = Cast<APPaddle>(Hit.GetActor());
+		if (HitPaddle)
+		{
+			const float PaddleY = HitPaddle->GetActorLocation().Y;
+			const float BallY = GetActorLocation().Y;
+
+			// -1..1 based on where ball hit relative to paddle center
+			const float HalfHeight = 250.f; // set to your paddle half-size (or read from bounds)
+			float Offset = (BallY - PaddleY) / HalfHeight;
+			Offset = FMath::Clamp(Offset, -1.f, 1.f);
+
+			// Convert offset to bounce angle, e.g. max 60 degrees
+			const float MaxAngleDeg = 60.f;
+			const float AngleRad = FMath::DegreesToRadians(Offset * MaxAngleDeg);
+
+			// Decide which way the ball should go (left or right) after hit:
+			const float DirX = (Velocity.X >= 0.f) ? -1.f : 1.f; // flip Y direction
+
+			// Build new direction from angle
+			FVector NewDir;
+			NewDir.X = DirX* FMath::Cos(AngleRad);
+			NewDir.Y = FMath::Sin(AngleRad);
+			NewDir.Z = 0.f;
+
+			float Speed = DefaultSpeed;
+			float PaddleSpeed = HitPaddle->GetVelocity().Size();
+			PaddleSpeed = FMath::Clamp(PaddleSpeed, 0.0f, 3000.0f);
+			Speed = PaddleSpeed + Speed;
+
+			Velocity = NewDir.GetSafeNormal() * Speed;
+			BounceSound->Play(0.0f);
+		}
+		else
 		{
 			const FVector N = Hit.ImpactNormal.GetSafeNormal();
 			Velocity = Velocity.MirrorByVector(N);

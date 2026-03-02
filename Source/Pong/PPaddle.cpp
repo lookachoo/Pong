@@ -34,9 +34,9 @@ void APPaddle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FVector Loc = GetActorLocation();
-	Loc.X = FMath::Clamp(Loc.X, MinX, MaxX);
-	SetActorLocation(Loc);
+	//FVector Loc = GetActorLocation();
+	//Loc.X = FMath::Clamp(Loc.X, MinX, MaxX);
+	//SetActorLocation(Loc);
 }
 
 // Called to bind functionality to input
@@ -45,10 +45,13 @@ void APPaddle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	UEnhancedInputComponent* InputComp = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	if (!InputComp || !Input_MoveVertical) return;
+	//if (!InputComp || !Input_MoveVertical) return;
 
 	InputComp->BindAction(Input_MoveVertical, ETriggerEvent::Triggered, this, &APPaddle::MoveVertical);
 	InputComp->BindAction(Input_MoveVertical, ETriggerEvent::Completed, this, &APPaddle::MoveVertical);
+
+	InputComp->BindAction(Input_MoveHorizontal, ETriggerEvent::Triggered, this, &APPaddle::MoveHorizontal);
+	InputComp->BindAction(Input_MoveHorizontal, ETriggerEvent::Completed, this, &APPaddle::MoveHorizontal);
 }
 
 void APPaddle::MoveVertical(const FInputActionValue& Value)
@@ -57,5 +60,11 @@ void APPaddle::MoveVertical(const FInputActionValue& Value)
 
 	AddMovementInput(FVector(1, 0, 0), MoveValue * PaddleSpeed);
 
+}
 
+void APPaddle::MoveHorizontal(const FInputActionValue& Value)
+{
+	const float MoveValue = Value.Get<float>();
+
+	AddMovementInput(FVector(0, 1, 0), MoveValue * PaddleSpeed);
 }

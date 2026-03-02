@@ -36,16 +36,13 @@ protected:
 	UAudioComponent* BounceSound;
 
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Defaults")
 	float DefaultSpeed = 1500.f;
 
+	UPROPERTY(EditAnywhere, Category="Defaults")
+	bool HorizontalMovement = false;
+
 	FVector Velocity;
-
-	UPROPERTY(EditAnywhere, Category="Bounds")
-	float MinX = -3000.f;
-
-	UPROPERTY(EditAnywhere, Category="Bounds")
-	float MaxX = 3000.f;
 
 
 public:	
